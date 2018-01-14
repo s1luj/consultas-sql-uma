@@ -59,14 +59,19 @@ where a1.fecha_nacimiento is between('31/12/1994','01/01/1997');
 --  Ejercicio 8:
 desc profesores;
 
-select p1.nombre, p1.apellido1, p1.apellido2, p2.nombre, p2.apellido1, p2.apellido2
+/*select p1.nombre, p1.apellido1, p1.apellido2, p2.nombre, p2.apellido1, p2.apellido2
 from profesores p1, profesores p2
-where (months_between(p1.antiguedad, sysdate)/12 - months_between(p2.antiguedad, sysdate)/12 )<2 and p1.departamento=p2.departamento and p1.id<p2.ID;
+where (months_between(p1.antiguedad, sysdate)/12 - months_between(p2.antiguedad, sysdate)/12 )<2 and p1.departamento=p2.departamento and p1.id<p2.ID;*/
 
-select p1.nombre, p1.apellido1, p1.apellido2, round(months_beween(sysdate p2.nombre,     
+
+select p1.nombre, p1.apellido1, p1.apellido2, round(months_between(sysdate, p2.antiguedad))     
 from profesores p1 join profesores p2 on (p1.id<p2.id)
-where p1.departamento=p2.departamento and abs (months_between(p1.antiguiedad,p2.antiguedad)/12) <2;
+where p1.departamento=p2.departamento and abs(months_between(p1.antiguedad,p2.antiguedad)/12)<2;
 
+-- el de abajo
+select p1.apellido1, p1.apellido2, p1.nombre, trunc(abs(months_between(sysdate,p1.antiguedad))/12) "Antiguedad1", p2.apellido1, p2.apellido2, p2.nombre, trunc(abs(months_between(sysdate,p2.antiguedad))/12) "Antiguedad2"
+from profesores p1 join profesores p2 on (p1.id>p2.id)
+where p1.departamento = p2.departamento and abs(months_between(p1.antiguedad,p2.antiguedad)/12)<2;
 -- Ejercicio 9: (hecho en casa)
 desc matricular;
 desc alumnos;
@@ -87,6 +92,13 @@ where to_char(asigh.codigo) like '112' and to_char(asigm.codigo) like '112' /*an
                                                         'SB',4,
                                                         'MH',5,
                                                         0);
+-- Ejercicio 10: (Hecho en casa)
+select *
+from asignaturas;
+
+select a1.nombre, a2.nombre, a3.nombre, a1.cod_materia
+from asignaturas a1 join asignaturas a2 on (a1.codigo>a2.codigo) join asignaturas a3 on (a2.codigo>a3.codigo)
+where a1.cod_materia = a2.cod_materia and a2.cod_materia = a3.cod_materia;
 
 -- Ejercicio 11: (Hecho en clase)
 desc alumnos;
@@ -107,6 +119,8 @@ order by a.apellido1, a.apellido2, a.nombre;
 -- Ejercicio 12:
 desc matricular;
 desc impartir;
+desc profesores;
+desc alumnos;
 /*
 select a.nombre, a.apellido1, a.apellido2
 from alumnos a join matricular m on (a.dni=m.alumno) join impartir i on (m.asignatura=i.asignatura) join profesores p on (i.profesor=p.id) 
@@ -116,7 +130,18 @@ select a.nombre, a.apellido1, a.apellido2
 from alumnos a join matricular m on (a.dni=m.alumno) join impartir i using (asignatura, grupo, curso) join profesores p ON (p.id=i.profesor)
 where upper(p.nombre) like 'ENRIQUE' and upper(p.apellido1) like 'SOLER'
 ORDER BY A.APELLIDO1, A.APELLIDO2,A.NOMBRE;
+
+select distinct a.apellido1, a.apellido2, a.nombre
+from alumnos a join matricular m on (a.dni=m.alumno) join asignaturas asig on (asig.codigo=m.asignatura) join impartir i on (i.asignatura=asig.codigo) join profesores p on (p.id=i.profesor)
+where upper(p.nombre) like 'ENRIQUE' and upper(p.apellido1) like 'SOLER' and i.curso=m.curso and i.grupo=m.grupo
+order by a.apellido1, a.apellido2, a.nombre;
+--alumnos,matricular,asignatura,impartir,profesores
 -- 
+
+-- Ejercicio 13: (Hecho en casa)
+
+
+
 -- Ejercicio 16: (Hecho en clase)
 desc impartir;
 
