@@ -1,3 +1,14 @@
+select 'HOLA'
+from dual;
+
+
+select *
+from (  select *
+        from asignaturas
+        where creditos is not null
+        order by creditos desc)
+where rownum <=2;
+
 -- EJERCICIO 1: (hecho en clase)
 /*select p1.nombre, p1.apellido1, p2.nombre, p2.apellido1, i1.asignatura, i2.asignatura
 from profesores p1 join impartir i1 on (i1.profesor = p1.id), profesores p2 join impartir i2 on (p2.id=i2.profesor)
@@ -19,6 +30,36 @@ UNION
 );
 
 create view prueba as select * from profesores; -- aún no se puede hacer porque no han dado privilegios
+
+-- EJERCICIO 2:
+desc profesores;
+desc impartir;
+
+select
+from alumnos a
+where a.dni  in (
+    select distinct m.alumno -- alumnos matriculados en alguna asignatura que no sea de matematica aplicada
+    from matricular m join asignaturas a on (m.asignatura=a.codigo) join departamentos d on (d.codigo=a.departamento)
+    where d.nombre != 'Matematica Aplicada'
+    );
+    
+select distinct m.alumno
+    from matricular m join asignaturas a on (m.asignatura=a.codigo) join departamentos d on (d.codigo=a.departamento)
+    where d.nombre != 'Matematica Aplicada';
+    ----------------------------------------------------------------------
+    
+-- EJERCICIO 3: !!!!!!!!!!!!!!!!!!!
+desc matricular;
+select * from matricular;
+
+select a1.nombre, a1.apellido1, a2.nombre, a2.apellido2
+from alumnos a1 join alumnos a2 on (a1.dni<a2.dni)
+where all(select m1.asignatura, m1.grupo
+        from matricular m1
+        where m1.alumno=a1.dni) !=  all(select m2.asignatura, m2.grupo
+                                    from matricular m2
+                                    where m2.alumno=a2.dni);
+
 
 --EJERCICIO 5: (HECHO EN CLASE)
 select a.dni

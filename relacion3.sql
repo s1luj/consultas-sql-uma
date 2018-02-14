@@ -6,14 +6,30 @@ group by p.departamento, d.nombre;
 desc departamentos;
 desc profesores;
 
+-- EJERCICIO 2:
+desc asignaturas;
+
+select sum(asig.creditos), d.nombre
+from asignaturas asig join departamentos d on (asig.departamento=d.codigo)
+group by d.nombre;
+
 -- EJERCICIO 3:
 select a.curso, count (distinct m.alumno)
 from asignaturas a join matricular m on (a.codigo=m.asignatura)
 group by a.curso
-having a.curso is not null;
+having a.curso is not null; -- El having es una clausula where para las agrupaciones
 
 desc asignaturas;
 desc matricular;
+
+-- EJERCICIO 4:
+desc impartir;
+desc profesores;
+
+select p.despacho, sum(i.carga_creditos)
+from impartir i join profesores p on (i.profesor=p.id)
+group by p.despacho
+having despacho is not null;
 
 -- EJERCICIO 5:
 desc alumnos;
@@ -33,6 +49,16 @@ select m.asignatura, asig.nombre, count(m.alumno), sum(decode(genero, 'FEM', 1, 
 from asignaturas asig join matricular m on (m.asignatura=asig.codigo) join alumnos alu on (alu.dni=m.alumno)
 group by m.asignatura, asig.nombre
 having round (100*sum(decode(genero, 'FEM', 1, 0))/count(m.alumno)) >20; -- el alias porcentaje no lo pilla, hay que copiar y pegar
+
+
+-- EJERCICIO 6:
+desc municipio;
+desc provincia;
+
+select p.nombre, sum(m.hombres) + sum(m.mujeres)
+from municipio m join provincia p on (m.cpro=p.codigo)
+group by p.nombre
+order by p.nombre;
 
 -- EJERCICIO 7:
 desc profesores;
@@ -58,7 +84,90 @@ where fecha_nacimiento = (
         where p2.departamento=p1.departamento
 );
 
---EJERCICIO 15:
+-- EJERCICIO 8: 
+select alu.dni, max(asig.creditos)
+from alumnos alu join matricular m on (alu.dni=m.alumno) join asignaturas asig on (m.asignatura= asig.codigo)
+group by alu.dni;
+
+select al.
+from alumnos al, asignaturas asi;
+
+desc matricular;
+desc asignaturas;
+desc alumnos;
+
+
+select distinct a.dni, asig.nombre
+from alumnos a join matricular m on (a.dni=m.alumno) join asignaturas asig on (asig.codigo=m.asignatura)
+where asig.creditos in (
+            select max(asig.creditos)
+            from alumnos a1 join matricular m on (a1.dni=m.alumno) join asignaturas asig on (asig.codigo=m.asignatura)
+            where a1.dni=a.dni
+    );
+
+-- EJERCICIO 9:
+    
+select d.nombre, p.nombre, p.apellido1, p.apellido2  
+from profesores p join departamentos d on (p.departamento=d.codigo)
+where p.antiguedad in (
+            select min(antiguedad)
+            from profesores
+            where departamento = d.codigo
+    );
+
+-- EJERCICIO 10: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+select distinct d.nombre, asig.nombre, asig.creditos
+from departamentos d join asignaturas asig on (d.codigo=asig.departamento)
+where asig.creditos in (
+        select max(asig1.creditos)
+        from asignaturas asig1 join departamentos d on (asig1.departamento=d.codigo)
+        where asig1.codigo = asig.codigo
+        group by d.codigo
+)
+group by d.codigo
+order by d.nombre;
+
+select d.codigo, asig.nombre
+from departamentos d join asignaturas asig on (d.codigo=asig.departamento);
+
+
+
+-- EJERCICIO 12:
+desc profesores;
+desc impartir;
+
+select p.id, p.nombre, p.apellido1, p.apellido2, sum(i.carga_creditos)
+from profesores p join impartir i on (p.id=i.profesor)
+group by p.id , p.nombre, p.apellido1, p.apellido2
+having sum(i.carga_creditos)= (
+        select max(sum(i.carga_creditos))
+        from profesores p1 join impartir i on (p1.id=i.profesor)
+        group by p1.id
+    )
+;
+
+-- EJERCICIO 13:
+desc departamentos;
+desc asignaturas;
+
+select d.codigo, d.nombre, count(asig.codigo)
+from departamentos d join asignaturas asig on (d.codigo=asig.departamento)
+group by d.codigo, d.nombre
+having count(asig.codigo)= (
+                        select max(count(asig1.codigo))
+                        from departamentos d1 join asignaturas asig1 on (d1.codigo=asig1.departamento) 
+                        group by d1.codigo
+                            )
+;
+
+-- EJERCICIO 14:
+select p.id, p.nombre, p.apellido1, p.apellido2, sum(i.carga_creditos) "Num Creditos"
+from profesores p join impartir i on (i.profesor=p.id)
+group by p.id, p.nombre, p.apellido1, p.apellido2
+having sum(i.carga_creditos)<10;
+
+-- EJERCICIO 15:
 desc asignaturas;
 desc impartir;
 /*
@@ -74,6 +183,14 @@ having sum(carga_creditos)>
     from impartir
     group by profesor);
     
+    
+    
+-- EJERCICIO 16:
+select p1.id, count(i1.profesor)
+from impartir i1 join  profesores p1 on (i1.profesor=p1.id)
+where i1.carga_creditos<6.5 and i1.curso='15/16'
+group by p1.id
+having count(i1.profesor)>=2;
     
     
 --DE AQUÍ PARA ABAJO ME LO PASÓ FERNANDO EL DIA 22 DE DICIEMBRE:

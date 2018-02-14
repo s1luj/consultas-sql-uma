@@ -19,7 +19,8 @@ select Nombre
 from asignaturas
 where creditos > any (select creditos from asignaturas -- algun. minimo en este caso
                  where upper(Nombre) like 'E%');
-                 
+        
+
 /*Listar el nombre de las asignaturas que tienen mas créditos que 
 ALGUNA DE
 las asignaturas de segundo curso.*/
@@ -50,6 +51,7 @@ WHERE curso = 2 ) ;
 select *
 from matricular
 where calificacion in ('SB', 'MH'); -- not in para lo contrario
+
 
 /*Mostrar el código y el nombre de las asignaturas que imparte el profesor manuel enciso*/
 
@@ -186,6 +188,7 @@ from asignaturas;
 select curso, max(creditos) -- hace falta una operacion que machaque todos los datos y las convierta a uno solo, como max, avg, median, etc...
 from asignaturas
 group by curso;
+
 
 select *
 from asignaturas
